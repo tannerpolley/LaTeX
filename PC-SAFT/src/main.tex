@@ -1,0 +1,127 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{biblatex}
+\usepackage{mathtools}
+\usepackage{appendix}
+\usepackage[version=4]{mhchem}
+\usepackage[export]{adjustbox}
+\usepackage{pdflscape}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\addbibresource{references.bib}
+\doublespacing
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    
+    % Title
+    {\Huge \bfseries{PC-SAFT Python Module Development and Application}\par}
+    \vspace{1cm}
+    {\large A report on my work done on developing a Python module for utilizing the full PC-SAFT functionality\par}
+
+    \vspace{2cm}
+    {\Large\bfseries Ch En 674 Semester Project\par}  % Uncomment this for MCA
+    % {\Large\bfseries Master of Science\par}   % Uncomment this for M.sc
+    \vspace{2cm}
+    {\large by\par}
+    \vspace{2cm}
+    {\Large\bfseries Tanner Polley\par}
+    \vspace{0.5cm}
+    % Department and University
+    {\Large\bfseries Department of Chemical Engineering\par}
+    {\Large\bfseries Brigham Young University\par}
+    {\Large\bfseries 2024\par}
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Main content
+\section{Introduction}
+% Include your Introduction content here.
+This project showcases the development and application of the PC-SAFT equation of state module in Python for thermodynamics systems. This module can take any take the properties of a mixture and create a mixture object that has the attributes and methods of all things PC-SAFT. At first it started as a class assignment to reproduce the results and calculate $\tilde{a}^{res}$ but it was naturally developed further so that it could be used by anyone since it seemed to not exist anywhere else. Luckily, a great starting resource was available from the You-Tuber ChemEngTutor \cite{ChemEngTutor} that had showcased a lot of the PC-SAFT capabilities in excel. Though some shortcuts were made, it was a great initial point to start and later became a much more cohesive and usable package. Including calculating $\tilde{a}^{res}$ with the association term (left out in the excel example), the package provides methods for useful terms such as $\text{Z}$, $\text{P}$, $\tilde{h}^{res}$, $\tilde{s}^{res}$, $\tilde{g}^{res}$, $\tilde{\mu}^{res}$, $\phi$, and a function for solving equilibrium problems such as bubble point. This model was a great challenge and many creative solutions were found to tackle many hurdles along the way. This package was tested using the standard hydrocarbon mixture of methane, ethane, and butane and was compared to the Peng-Robinson method for accuracy. There is a need for further development with the amine mixture of CO2, MEA, and water. It is likely that it is functional and accurate for this mixture including the association term since the fugacity coefficients produced with this model were in normal range but the VLE of this mixture was unable to be fully validated. This was due to the complex and highly non-linear chemical equilibrium that needs to be formulated in the liquid phase before the vapor-liquid equilibrium can be tested.
+
+\section{Adding the Association Term}
+In order to introduce the association term, a quick literature review had to be done. In the original paper done by Gross and Sadowski \cite{Gross2001-ow}, the association component in $\tilde{a}^{res}$ was not included. Instead it was found in their future paper \cite{Gross2002-nq}. The two important parameters that are added in order to quantify the energy accounted for with association are association energy $\epsilon^{A_iB_i}$, and effective association volume $\kappa^{A_{i}B_{i}A}$ where A and B are different association sites. Cross-association parameters can be determined from these pure-component association parameters with combining rules showed below
+
+\begin{equation}
+\begin{gathered}
+\epsilon^{A_i B_j}=\frac{1}{2}\left(\epsilon^{A_i B_i}+\epsilon^{A_j B_j}\right) \\
+\kappa^{A_j B_j A}=\sqrt{\kappa^{A_i B_i} \kappa^{A_j B_j}}\left(\frac{\sqrt{\sigma_{i i} \sigma_{i j}}}{1 / 2\left(\sigma_{i i}+\sigma_{j j}\right)}\right)^3
+\end{gathered}
+\end{equation}
+
+A rather complex equation was found in \cite{Huang1991-xk} for the associaton component is given here
+
+\begin{equation}
+\frac{a^{\mathrm{ass} o c}}{R T}=\sum_i X_i\left[\sum_{\mathrm{A}_i}\left[\ln X^{\mathrm{A}_i}-\frac{X^{\mathrm{A}_i}}{2}\right]+\frac{1}{2} M_i\right]
+\end{equation}
+
+where $X^{\mathrm{A}_{\mathrm{i}}}$, the mole fraction of molecules $i$ not bonded at site $\mathrm{A}$, in mixture with other components, is given by
+\begin{equation}
+\begin{gathered}
+X^{\mathrm{A}_i}=\left[1+N_{\mathrm{Av}} \sum_j \sum_{\mathrm{B}_j} \rho_j X^{\mathrm{B}_j} \Delta^{\mathrm{A}_i \mathrm{~B}_j j}\right]^{-1} \\
+\left(\sum_{\mathrm{B}_j} \text{over all sites on molecule} \quad \mathrm{j}, \mathrm{A}_j, \mathrm{B}_j, \mathrm{C}_j, \ldots ; \sum_j \text{over all components} \right)
+\end{gathered}
+\end{equation}
+
+with association strength given by
+
+\begin{equation}
+\Delta^{\mathrm{A}_i \mathrm{~B}_j}=d_{i j}{ }^3 g_{i j}\left(d_{i j}\right)^{\operatorname{seg}_\kappa \mathrm{A}_i \mathrm{~B}_j}\left[\exp \left(\epsilon^{\mathrm{A}_i \mathrm{~B}_j} / k T\right)-1\right]
+\end{equation}
+
+In order to solve for $X^{\mathrm{A}_i}$, it is iterated over with a guess value in equation 2.3 until it converges. This is a less than trivial component of the model that is not well explained in any paper available. This term was added as a class method as well as used in the overall method to find $\tilde{a}^{res}$ if $\epsilon^{A_iB_i}$, and $\kappa^{A_{i}B_{i}A}$ are given. This was an easy addition when it comes to building the Python module though the algorithm was originally tough to implement.
+
+\section{Solving for Fugacity Coefficient}
+Solving for the fugacity coefficient with the PC-SAFT EOS is a large endeavor. This is mostly due to the need for many different differentials of $\tilde{a}^{res}$ to be determined. Solving these differentials analytically seemed either impossible or too time consuming so solving them numerically was the only option. To accomplish this, the method containing $\tilde{a}^{res}$ needed the capability of being differentiated with respect to different variables, such as $T$, $\eta$, and $x_i$. This is a challenge when trying to build a model that is robust and clean. Usually this variable takes the first spot on the parameter list when defining the function that ends up being numerically differentiated but this was not an option. This differential change in these variables also had to momentarily change the evaluation of all other values in the model such as $d$, $\rho$, $\xi$, and $g_{ij}^{hs}$. The solution was to make all of these variables different methods that were then called into each separate method when they needed to be used. When a differential method was then called and a variable such as $T$ needed to be numerically altered to approximate the derivative, the global value of $T$ would be changed and this change would be found in all of the other methods since each variable was specifically called in each method individually. This global variable would then be changed back to its original value so that it retained its initial starting value. This all in all led to a very fluid and cohesive model that was flexible and accurate. With these features, the model gained the capability to solve for each of $\text{Z}$, $\text{P}$ (if not given), $\tilde{h}^{res}$, $\tilde{s}^{res}$, $\tilde{g}^{res}$, $\tilde{\mu}^{res}$, and $\phi _i$. Once this was concluded though, a huge problem arose with the model's original formulation. It was learned that $\eta$, the packing fraction was actually not a variable that was given but had to be solved first.
+
+
+\section{Solving for the packing fraction $\eta$}
+This was a confusing realization since in the helpful excel sheets that had the original implementation of the PC-SAFT model, $\eta$ was always a given input and it had multiple variables that depended on this value (such as $\rho$ which is almost everywhere). After reading more carefully in the appendix of \cite{Gross2001-ow}, equation A.20 gives the equation for $\rho$ in which is stated that $\eta$ must be iteratively adjusted until $P^{calc} = P^{sys}$. Though this is difficult since all of the intermediates that are needed to calculate $P^{calc}$ depend on $\eta$. Though originally stumped, a solution was found by referencing a method to iteratively find $\eta$ in the initialization function. This is also where the discrepancy between the liquid and vapor phases are determined. Since the packing fraction for a liquid is much higher than a vapor, this iterative solve can converge on one of two values depending on the starting guess value. For a liquid, it is suggested to start around $.5$, but for a vapor around $10^{-10}$ \cite{Gross2001-ow}. All calculations are done up until $Z$ is found which will determine the $P^{calc}$ which is compared to $P^{sys}$ until it converges.
+
+\section{Application: Flashing a Mixture of Hydrocarbons}
+The goal in this project was to not only create a model to simulate the PC-SAFT EOS, but to also use it as a functional model in common applications. A great litmus test for a model is to use it is equilibrium problems such as flash problems. These common flash problems are bubble and dew point calculations with given $T$ or $P$. This was done since almost all Vapor-Liquid-Equilibrium systems are validated with equilibrium data that has where $T$ and $x$ are given and the output in a specific vapor pressure for a relevant species, which is essentially a bubble-point problem with $T$ given. This mixture had a $T = 233.15 $ K and mole fractions of .1, .3, and .6 respectively. The results were tested against the Peng-Robinson EOS and PC-SAFT EOS with results of both EoS's coming from ChemEngTutor and Aspen Plus.
+
+\begin{table}[]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+               & $y_1$ & $y_2$ & $y_3$ & P       \\ \hline
+PR Excel       & .7102 & .2136 & .0761 & 1226440 \\ \hline
+PR Aspen       & .7105 & .2135 & .0760 & 1227972 \\ \hline
+PC-SAFT Aspen  & .7215 & .2043 & .0742 & 1219440 \\ \hline
+PC-SAFT Excel  & .7247 & .2029 & .0724 & 1276315 \\ \hline
+PC-SAFT Python & .7246 & .2030 & .0724 & 1276185 \\ \hline
+\end{tabular}
+\end{table}
+
+The results are shown are very consistent with the other methods of flashing a hydrocarbon mixture such as this. The Peng-Robinson shows a slight difference in mole fraction compared to the PC-SAFT methods but the pressure is different throughout the methods.
+
+
+\section{Conclusion and Future Work}
+Overall, the PC-SAFT model has been fully developed as a Python class and validated using the typical hydrocarbon mixture of Methane, Ethane, and Butane.
+Much time and work had been done on formulating and example on using the PC-SAFT EOS for an amine mixture of of $CO_2$, $MEA$, and $H_2O$. Unfortunately, the validation work needed to be done involved an extremely non-linear chemical equilibrium formulation that was not really pertinent to the project given. Fugacity coefficients and even a flash was produced using this mixture with results that seem valid but more explicit validation is needed. More future work would add the ion component to the model so that it could accurately model electrolyte solutions (such as the amine solution).
+
+
+\newpage
+\section{References}
+\printbibliography
+
+
+\newpage
+\appendix
+\section{Appendix}
+Python Code for the PC-SAFT package (also on Github using this \href{https://github.com/tannerpolley/ePC_SAFT}{link})
+
+\includepdf[pages=-]{PC_SAFT.pdf}
+
+\end{document}
