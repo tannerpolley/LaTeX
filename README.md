@@ -1,0 +1,2 @@
+# LaTeX
+Contains LaTeX projects
