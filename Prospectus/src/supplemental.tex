@@ -1,0 +1,217 @@
+\subsubsection{Reaction Kinetics}
+
+An accurate model of reaction kinetics plays a vital part in both the mass balance and energy balance of the column. The generation term found in the mass balance is what differentiates the liquid from the vapor as well as the heat of reaction found on the liquid side but not the vapor. Unfortunately, there is not an overall agreement among all the researchers on the exact mechanisms in action with the MEA-CO2-H2O system. In this model, six reactions are used and are as follows based on the work of Vaidya \cite{Vaidya2007}
+
+$$
+\begin{aligned}
+& 2\mathrm{MEA} +\mathrm{CO}_2 \leftrightarrow \mathrm{MEA}^{+}+\mathrm{MEACOO}^{-}  \\
+& \mathrm{CO}_2 + 2\mathrm{H}_2 \mathrm{O} \leftrightarrow  \mathrm{HCO}^{-}_{3} +\mathrm{H}_{3}^{+}\mathrm{O}\\
+& \mathrm{CO}_2 + \mathrm{OH}^- \leftrightarrow  \mathrm{HCO}^{-}_{3}\\
+& 2\mathrm{H}_2 \mathrm{O} \leftrightarrow  \mathrm{OH}^{-} +\mathrm{H}_{3}^{+}\mathrm{O}\\
+& \mathrm{MEA}^{+} + \mathrm{H}_2 \mathrm{O} \leftrightarrow  \mathrm{MEA} +\mathrm{H}_{3}^{+}\mathrm{O}\\
+& \mathrm{MEACOO}^{-} + \mathrm{H}_2 O \leftrightarrow \mathrm{MEA} +\mathrm{HCO}_3^{-}
+\end{aligned}
+$$
+
+The following are functional correlations for four of the equilibrium constants that were fitted with literature data by Lui and others by ratios of the other equilibrium constants \cite{Liu1999}
+
+\begin{align}
+K_2&={10}^6 \exp \left({231.465-\frac{12092.1}{T_l}-36.7816\ln\left(T_l\right)} \right) \\
+K_4&={10}^6 \exp \left({132.899-\frac{13445.9}{T_l}-22.4773\ln\left(T_l\right)} \right) \\
+K_5&={10}^6 \exp \left({0.7996-\frac{8094.81}{T_l}-0.007484T_l}  \right)\\
+K_6&=\frac{{10}^6 \exp \left({1.282562-\frac{3456.179}{T_l}}\right)}{5} \\
+K_1&=\frac{K_2}{K_5 K_6} \\
+K_3&=\frac{K_2}{K_4}
+\end{align}
+
+The mass balances for an MEA absorption column in terms of liquid and vapor concentrations respectively are:
+
+
+\begin{equation}
+\frac{dC_i^l}{dz} = \frac{N_i - R_{gen,i}}{u_l}
+\end{equation}
+
+\begin{equation}
+\frac{dC_i^v}{dz} = \frac{N_i}{u_v}
+\end{equation}
+
+Where
+
+\begin{itemize}
+  \item $C_i^l$ is the concentration of species $i$ in the liquid $(\frac{mol}{m^3})$
+  \item $C_i^v$ is the concentration of species $i$ in the vapor $(\frac{mol}{m^3})$
+  \item $z$ is the height of the absorption column $(m)$
+  \item $N_i$ is the molar flux of species $i$ $(\frac{mol}{m^3 s})$
+  \item $u_l$ is the velocity of the liquid $(\frac{m}{s})$
+  \item $u_v$ is the velocity of the vapor $(\frac{m}{s})$
+  \item $R_{gen,i}$ is moles generated from the reaction per volume $(\frac{mol}{m^3 s})$
+\end{itemize}
+
+The energy balances for an MEA absorption column in terms of liquid and vapor temperatures respectively are:
+
+
+
+\begin{equation}
+\frac{\partial T^l}{\partial z} = \frac{ \sum_{i \in X} N_i \Delta \widetilde{H}_i^{v l}+ N_{C O_2} \Delta H_{R E} + U_{T, l v}\left(T^l-T^v\right)}{u_l \sum_{i \in X} C_i^l \tilde{C} p_i^l}
+\end{equation}
+
+
+
+\begin{equation}
+\frac{\partial T^v}{\partial z} = \frac{ -\sum_{i \in X} N_i \Delta \widetilde{H}_i^{v l} + U_{T, l v}\left(T^l-T^v\right)}{u_v \sum_{i \in X} C_i^v \tilde{C} p_i^v}
+\end{equation}
+
+Where
+
+\begin{itemize}
+  \item $T^j$ is the temperature in the phase $j$ $(K)$
+  \item $C_i^j$ is the concentration of species $i$ in the phase $j$ $(\frac{mol}{m^3})$
+  \item $\tilde{C} p_i^j$ is the specific molar heat capacity of species $i$ in the phase $j$ $(\frac{J}{mol K})$
+  \item $z$ is the height of the absorption column $(m)$
+  \item $N_i$ is the molar flux of species $i$ $(\frac{mol}{m^3 s})$
+  \item $u_j$ is the velocity of the phase $j$ $(\frac{m}{s})$
+  \item $\Delta H_{R E}$ is the heat of reaction $(\frac{J}{mol})$
+  \item $\Delta \widetilde{H}_i^{v l}$ is the latent heat of vaporization $(\frac{J}{mol})$
+  \item $U_{T, l v}$ is the overall heat transfer coefficient $(\frac{J}{K s})$
+\end{itemize}
+
+A major component of the model is the molar flux ($N$) of the interface between the liquid and vapor which combines elements of both mass transfer and thermodynamic equilibrium (the driving force). The equation for molar flux is shown below:
+
+\begin{equation}
+N_i^j = k_i^j\left(C_i^{* j}-C_i^j\right) a_w
+\end{equation}
+
+Where
+
+\begin{itemize}
+  \item $N_i^j=$ diffusion molar flow rate of species $i$ in phase $j$ $(\frac{mol}{m^3 s})$
+  \item $k_i^j=$ mass transfer coefficient for species $i$ in phase $j$ $(\frac{m}{s})$
+  \item $C_i^{* j}=$ species interface concentration for species $i$ in phase $j$ $(\frac{mol}{m^3})$
+  \item $C_i^j=$ species bulk concentration for species $i$ in phase $j$ $(\frac{mol}{m^3})$
+  \item $a_w=$ interfacial area $(\frac{m}{s})$
+\end{itemize}
+
+The driving force is the difference between the concentration at the interface and the concentration of the bulk. The concentration at the interface is determined through a VLE analysis which will be shown later. The mass transfer coefficients are determined through the equations found by Billet  \cite{Billet1999} where the liquid and vapor mass transfer coefficients are respectively
+
+\begin{equation}
+k_i^{\mathrm{l}}=C_{\mathrm{l}}\left(\frac{g \rho_{\mathrm{l}}}{\mu_{\mathrm{l}}}\right)^{0.167}\left(\frac{D_i^{\mathrm{l}}}{d_{\mathrm{h}}}\right)^{0.5}\left(\frac{u_{\mathrm{L}}}{a}\right)^{0.333}
+\end{equation}
+
+\begin{equation}
+k_i^{\mathrm{v}}=D_i^{\mathrm{v}} C_{\mathrm{v}}\left(\frac{a}{d_{\mathrm{h}}}\right)^{0.5} S c_{\mathrm{v}}^{0.333}\left(\frac{u_{\mathrm{v}} \rho_{\mathrm{v}}}{a \mu_{\mathrm{v}}}\right)^{0.75} \sqrt{\frac{1}{\varepsilon-h_{\mathrm{L}}}}
+\end{equation}
+
+Where
+
+\begin{itemize}
+  \item $C_l$ and $C_v$ are both packing constants
+  \item $g$ is the gravitational constant $(\frac{m}{s^2})$
+  \item $\rho _j=$ is the density of the phase $j$ $(\frac{kg}{m^3})$
+  \item $\mu _j=$ is the heat capacity of the phase $j$ $(Pa\cdot s)$
+  \item $u_j=$ is the velocity of phase $j$ $(\frac{m}{s})$
+  \item $D_i^j=$ is the diffusion coefficient of species $i$ in the phase $j$ $(\frac{m^2}{s})$
+  \item $a=$ packing specific area
+  \item $d_h$ is the hydraulic diameter $(m)$
+  \item $Sc$ is the Schmidt number
+  \item $\epsilon$ is the void fraction
+  \item $h_L$ is the liquid holdup
+\end{itemize}
+
+It is assumed that at the interface, there are equilibrium conditions for the vapor and liquid sides. Fugacity is used to evaluate the equilibrium conditions.
+
+\begin{equation}
+  \hat{f}_i^V=\hat{f}_i^V
+\end{equation}
+
+Where the vapor and liquid fugacities are evaluated as such
+\begin{equation}
+\hat{f}_i^V=y_i \varphi_i^V P \quad
+\end{equation}
+
+\begin{equation}
+\hat{f}_i^L=x_i \varphi_i^L P \quad
+\end{equation}
+
+Equating the two expressions and eliminating $\mathrm{P}$
+
+\begin{equation}
+y_i \varphi_i^V=x_i \varphi_i^L
+\end{equation}
+
+Defining the vapour-liquid equilibrium in terms of $\mathrm{K}$ values where
+
+\begin{equation}
+K_i=\frac{\varphi_i^L}{\varphi_i^V}
+\end{equation}
+
+This results in the more simplified expression:
+
+\begin{equation}
+y_i=K_i x_i
+\end{equation}
+
+The value $\mathrm{K}_{\mathrm{i}}$ for each component can be computed from the Peng Robinson equation of state to get the fugacity coefficient values:
+
+\begin{equation}
+\ln \varphi_i=\frac{1}{R T} \int_V^{\infty}\left[\left(\frac{\partial P}{\partial N_i}\right)_{T, V, N_j}-\frac{R T}{V}\right] d V-R T \ln Z
+\end{equation}
+
+The integration then yields this equation depending on the phase:
+
+\begin{equation}
+\ln \varphi_i^j=\frac{B_i}{B_{\text {mix }}^j}\left(Z^j-1\right)-\ln \left(Z^j-B_{\text {mix }}^j\right)-\frac{A_{\text {mix }}^j}{2 \sqrt{2} B_{\text {mix }}^j}\left(\frac{2 \sum x_i A_i}{A_{\text {mix }}^j}-\frac{B_i^j}{B_{\text {mix }}^j}\right) \ln \left(\frac{Z^j+\left(1+\sqrt{2)} B_{\text {mix }}^j\right.}{Z^j+\left(1-\sqrt{2)} B_{\text {mix }}^l\right.}\right)
+\end{equation}
+
+Where $\mathrm{i}$ is the species and $\mathrm{j}$ is the phase.  In this formula, $A_i$ and $B_i$ are the A and B co-efficient for the pure component while $A_{m i x}^j$ and $B_{\text {mix }}^j$ are the mixture coefficients.  To solve this equation, the quantities mentioned above must be found as well as $Z$ for each phase. This is where the Peng Robinson EOS comes in
+
+
+\begin{equation}
+P=\frac{R T}{V_m-b}-\frac{a \alpha}{V_m^2+2 b V_m-b^2}
+\end{equation}
+
+Where:
+\begin{equation}
+Z=\frac{P V}{R T}
+\end{equation}
+
+and combining the two equations leads to this new equation
+
+\begin{equation}
+Z=\frac{V}{V-b}-\frac{a V}{R T\left(V^2+2 b V-b^2\right)}
+\end{equation}
+
+The equation can be rearranged into a cubic equation to solve.
+
+\begin{equation}
+Z^3+\beta Z^2+\gamma Z+\delta=0
+\end{equation}
+Where
+$$
+\begin{aligned}
+& \beta=B-1 \\
+& \gamma=A-3 B^2-2 B \\
+& \delta=B^3+B^2-A B
+\end{aligned}
+$$
+
+And to get $A$ and $B$ in any form, use these equations
+
+\begin{equation}
+A=\frac{a P}{R^2 T^2}
+\end{equation}
+
+\begin{equation}
+B=\frac{b P}{R T}
+\end{equation}
+
+Before solving for $Z$ for each phase, the mixing rules need to be applied to this multi-component system to determine $a_{\text {mix }}^j$, $b_{\text {mix }}^j$
+
+The following equations include interaction parameters to solve for these variables:
+
+
+\begin{align}
+b_{\text {mix }}^l&=\sum_i^N x_i b_i  \\
+b_{\text {mix }}^v&=\sum_i^N y_i b_i \\
+a_{\text {mix }}^l&=\sum_i^N \sum_j^N x_i x_j \sqrt{a_i a_j}\left(1-k_{i j}\right) \\
+a_{\text {mix }}^v&=\sum_i^N \sum_j^N y_i y_j \sqrt{a_i a_j}\left(1-k_{i j}\right)
+\end{align}
